@@ -11,7 +11,7 @@ int main (int argc, char *argv[]) { // (입력 받는 파라메타 갯수, 값)
     }
     char *str = argv[1];
     while (1) {
-        Sleep(1000);   // 1초 기다림
+        Sleep(4000);   // 1초 기다림
         printf("%s\n", str);
     }
     return 0;
