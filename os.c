@@ -1,38 +1,16 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <windows.h>
-
-volatile int counter = 0;
-int loops;
-
-void *worker(void *arg) {
-    int i;
-    for (i = 0; i < loops; i++)
-        counter++;
-    return NULL;
-}
+#include <unistd.h>
+#include <assert.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>   //S_IRWXU 포함하는 라이브러리
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "usage: threads <value>\n");
-        exit(1);
-    }
-
-    loops = atoi(argv[1]);
-    pthread_t p1, p2;
-    printf("Initial value : %d\n", counter);
-    
-    pthread_create(&p1, NULL, worker, NULL);
-    Sleep(1000);
-    pthread_create(&p2, NULL, worker, NULL);
-    
-    pthread_join(p1, NULL);
-    pthread_join(p2, NULL);
-
-    
-
-    printf("Final value : %d\n", counter);
+    int fd = open("/tmp/file", O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);  // 파일 생성
+    assert (fd > -1);   // 파일에 데이터 쓰기
+    int rc = write (fd, "hello world\n", 13);
+    assert (rc == 13);
+    close(fd);
 
     return 0;
 }
