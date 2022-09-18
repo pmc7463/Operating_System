@@ -1,18 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <assert.h>
-#include <Windows.h>    // Sleep(1000) 를 쓰기 위한 헤드함수
+#include <pthread.h>
+#include <windows.h>
 
-int main (int argc, char *argv[]) { // (입력 받는 파라메타 갯수, 값)
+volatile int counter = 0;
+int loops;
+
+void *worker(void *arg) {
+    int i;
+    for (i = 0; i < loops; i++)
+        counter++;
+    return NULL;
+}
+
+int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "usage: cpu <string>\n");   // 에러메시지
+        fprintf(stderr, "usage: threads <value>\n");
         exit(1);
     }
-    char *str = argv[1];
-    while (1) {
-        Sleep(2000);   // 1초 기다림
-        printf("%s\n", str);
-    }
+
+    loops = atoi(argv[1]);
+    pthread_t p1, p2;
+    printf("Initial value : %d\n", counter);
+    
+    pthread_create(&p1, NULL, worker, NULL);
+    Sleep(1000);
+    pthread_create(&p2, NULL, worker, NULL);
+    
+    pthread_join(p1, NULL);
+    pthread_join(p2, NULL);
+
+    
+
+    printf("Final value : %d\n", counter);
+
     return 0;
 }
